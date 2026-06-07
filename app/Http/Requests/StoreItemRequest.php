@@ -1,34 +1,49 @@
 <?php
+
 namespace App\Http\Requests;
+
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreItemRequest extends FormRequest{
-    public function authorize(){
+class StoreItemRequest extends FormRequest
+{
+    public function authorize()
+    {
         return true;
     }
-    protected function prepareForValidation(){
+
+    protected function prepareForValidation()
+    {
         $input = $this->all();
+
         array_walk($input, function (&$val) {
-        if (is_string($val)) {
-            $val = trim(strip_tags($val));
-        }
-    });
-    $this->merge($input);
-}
-    public function rules(){
+            if (is_string($val)) {
+                $val = trim(strip_tags($val));
+            }
+        });
+
+        $this->merge($input);
+    }
+
+    public function rules()
+    {
         return [
-            "name" => "required|string|max:255",
-            "quantity" => "required|integer|min:0",
-            "price" => "required|numeric|min:0",
-            "category_id" => "required|exists:categories,id",
+            'name'        => 'required|string|max:255',
+            'quantity'    => 'required|integer|min:0',
+            'price'       => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
         ];
     }
-    public function messages(){
+
+    public function messages()
+    {
         return [
-            "name.required" => "Nama item wajib diisi.",
-            "quantity.required" => "Jumlah item wajib diisi.",
-            "price.required" => "Harga item wajib diisi.",
-            "category_id.required" => "Kategori item wajib diisi.",
+            'name.required'      => 'Nama item wajib diisi.',
+            'quantity.required'  => 'Jumlah item wajib diisi.',
+            'quantity.integer'   => 'Jumlah harus angka bulat.',
+            'price.required'     => 'Harga item wajib diisi.',
+            'price.numeric'      => 'Harga harus berupa angka.',
+            'category_id.required' => 'Kategori item wajib diisi.',
+            'category_id.exists' => 'Kategori tidak ditemukan.',
         ];
     }
 }

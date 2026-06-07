@@ -26,15 +26,18 @@ class UpdateCategoryRequest extends FormRequest
 
     public function rules()
     {
+        $id = $this->route('category');
+
         return [
-            "name" => "required|string|max:255",
+            'name' => "required|string|max:255|unique:categories,name,{$id}",
         ];
     }
 
     public function messages()
     {
         return [
-            "name.required" => "Nama kategori wajib diisi.",
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.unique'   => 'Nama kategori sudah ada.',
         ];
     }
 }

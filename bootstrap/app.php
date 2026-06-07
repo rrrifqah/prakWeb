@@ -13,18 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Daftarkan alias middleware kustom kamu di sini
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Tangkap exception dan ubah responnya menjadi JSON seragam jika request diawali dengan api/
         $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'status' => 'error',
-                    'data' => null,
+                    'success' => false,
                     'message' => $e->getMessage(),
                 ], method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500);
             }
