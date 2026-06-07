@@ -26,6 +26,7 @@ class ItemService
     {
         $item = Item::findOrFail($id);
         $item->update($data);
+
         return $item;
     }
 

@@ -26,6 +26,7 @@ class CategoryService
     {
         $cat = Category::findOrFail($id);
         $cat->update($data);
+
         return $cat;
     }
 

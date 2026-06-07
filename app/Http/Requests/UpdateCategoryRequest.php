@@ -11,11 +11,33 @@ class UpdateCategoryRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $input = $this->all();
+
+        array_walk($input, function (&$val) {
+            if (is_string($val)) {
+                $val = trim(strip_tags($val));
+            }
+        });
+
+        $this->merge($input);
+    }
+
     public function rules()
     {
         $id = $this->route('category');
+
         return [
-            'name' => "required|string|unique:categories,name,{$id}",
+            'name' => "required|string|max:255|unique:categories,name,{$id}",
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.unique'   => 'Nama kategori sudah ada.',
         ];
     }
 }

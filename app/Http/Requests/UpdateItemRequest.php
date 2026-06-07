@@ -11,6 +11,19 @@ class UpdateItemRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $input = $this->all();
+
+        array_walk($input, function (&$val) {
+            if (is_string($val)) {
+                $val = trim(strip_tags($val));
+            }
+        });
+
+        $this->merge($input);
+    }
+
     public function rules()
     {
         return [
@@ -24,7 +37,13 @@ class UpdateItemRequest extends FormRequest
     public function messages()
     {
         return [
-            'sometimes.required' => 'Field ini diperlukan saat diubah.',
+            'name.required'        => 'Nama item wajib diisi.',
+            'quantity.required'    => 'Jumlah item wajib diisi.',
+            'quantity.integer'     => 'Jumlah harus angka bulat.',
+            'price.required'       => 'Harga item wajib diisi.',
+            'price.numeric'        => 'Harga harus berupa angka.',
+            'category_id.required' => 'Kategori item wajib diisi.',
+            'category_id.exists'   => 'Kategori tidak ditemukan.',
         ];
     }
 }
