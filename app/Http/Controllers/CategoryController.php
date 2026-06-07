@@ -2,46 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Services\CategoryService;
+use App\Http\Controllers\Api\BaseController;
 
-class CategoryController extends Controller
+class CategoryController extends BaseController
 {
+    protected CategoryService $svc;
+
+    public function __construct(CategoryService $svc)
+    {
+        $this->svc = $svc;
+    }
+
     public function index()
     {
-        return response()->json(Category::all(), 200);
+        return $this->success($this->svc->all());
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $req)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $category = Category::create($request->all());
-        return response()->json($category, 201);
+        $cat = $this->svc->create($req->validated());
+        return $this->success($cat, "Kategori dibuat", 201);
     }
 
-    public function show(Category $category)
+    public function show($id)
     {
-        return response()->json($category, 200);
+        try {
+            $cat = $this->svc->find($id);
+            return $this->success($cat);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
+        }
     }
 
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $req, $id)
     {
-        $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $category->update($request->all());
-        return response()->json($category, 200);
+        $cat = $this->svc->update($id, $req->validated());
+        return $this->success($cat, "Kategori diperbarui");
     }
 
-    public function destroy(Category $category)
+    public function destroy($id)
     {
-        $category->delete();
-        return response()->json(['message' => 'Category deleted successfully'], 200);
+        $this->svc->delete($id);
+        return $this->success(null, "Kategori dihapus", 204);
     }
 }

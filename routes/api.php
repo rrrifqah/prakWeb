@@ -1,24 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\CategoryController;
 
-// Route Autentikasi (public)
-Route::post('register', 'App\Http\Controllers\AuthController@register');
-Route::post('login',    'App\Http\Controllers\AuthController@login');
+Route::prefix('v1')->group(function () {
 
-// Route yang dilindungi Sanctum
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('categories', 'App\Http\Controllers\CategoryController')
-        ->except(['destroy']);
+    // Rute Publik
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
 
-    Route::delete('categories/{category}',
-        'App\Http\Controllers\CategoryController@destroy')
-        ->middleware('role:admin');
+    // Rute Terproteksi Token
+    Route::middleware('auth:sanctum')->group(function () {
 
-    Route::apiResource('items', 'App\Http\Controllers\ItemController')
-        ->except(['destroy']);
+        Route::apiResource('categories', CategoryController::class)->except(['destroy']);
+        Route::delete('categories/{category}', [CategoryController::class, 'destroy'])
+            ->middleware('role:admin');
 
-    Route::delete('items/{item}',
-        'App\Http\Controllers\ItemController@destroy')
-        ->middleware('role:admin');
+        Route::apiResource('items', ItemController::class)->except(['destroy']);
+        Route::delete('items/{item}', [ItemController::class, 'destroy'])
+            ->middleware('role:admin');
+    });
+
 });
