@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Services\ItemService;
@@ -16,9 +17,17 @@ class ItemController extends BaseController
         $this->svc = $svc;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return $this->success($this->svc->all());
+        $items = $this->svc->all();
+
+        if ($request->filled('category_id')) {
+            $items = $items->filter(function ($item) use ($request) {
+                return $item->category_id == $request->category_id;
+            })->values();
+        }
+
+        return $this->success($items);
     }
 
     public function store(StoreItemRequest $req)
