@@ -20,7 +20,6 @@ class ItemController extends BaseController
     public function index(Request $request)
     {
         $items = $this->svc->all();
-
         // Filter item berdasarkan category_id
         if ($request->filled('category_id')) {
             $items = $items->filter(function ($item) use ($request) {
