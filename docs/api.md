@@ -1,29 +1,21 @@
-## Header untuk endpoint protected
+## Filter Items by Category
 
-Authorization: Bearer {token}
-Accept: application/json
-Content-Type: application/json
+Endpoint:
+GET /api/v1/items?category_id={id}
 
-## Contoh Body POST /items
+Description:
+Digunakan untuk menampilkan item berdasarkan kategori tertentu.
 
-{
-  "name": "Laptop",
-  "quantity": 5,
-  "price": 1000000,
-  "category_id": 1
-}
+Parameter:
+- category_id (optional)
 
-## Contoh Response Sukses
+Contoh Request:
+GET /api/v1/items?category_id=1
+
+Contoh Response:
 
 {
   "success": true,
-  "data": {},
-  "message": "Item dibuat"
-}
-
-## Contoh Response Error
-
-{
-  "success": false,
-  "message": "Data tidak ditemukan"
+  "data": [],
+  "message": null
 }
