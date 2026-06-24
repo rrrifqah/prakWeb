@@ -17,14 +17,23 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ], method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500);
+   ->withExceptions(function (Exceptions $exceptions) {
+    $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+        if ($request->is('api/*')) {
+            $statusCode = 500;
+            if (method_exists($e, 'getStatusCode')) {
+                $statusCode = $e->getStatusCode();
+            } elseif ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                $statusCode = 401;
+            } elseif ($e instanceof \Illuminate\Auth\Access\AuthorizationException) {
+                $statusCode = 403;
             }
-        });
-    })
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $statusCode);
+        }
+    });
+})
     ->create();
